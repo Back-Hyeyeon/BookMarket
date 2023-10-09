@@ -1,4 +1,4 @@
-package main;
+package memder;
 
 public class Admin extends Customer {
 	private String id = "Admin";

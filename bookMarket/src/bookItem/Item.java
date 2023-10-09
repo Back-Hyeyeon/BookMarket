@@ -1,4 +1,4 @@
-package main;
+package bookItem;
 
 public abstract class Item {
 	String bookId; // 도서 ID

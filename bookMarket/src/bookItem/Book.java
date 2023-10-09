@@ -1,4 +1,4 @@
-package main;
+package bookItem;
 
 public class Book extends Item {
 

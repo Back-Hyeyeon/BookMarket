@@ -1,4 +1,6 @@
-package main;
+package cart;
+
+import bookItem.Book;
 
 public class Cart implements CartInterface {
 

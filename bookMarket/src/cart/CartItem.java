@@ -1,4 +1,6 @@
-package main;
+package cart;
+
+import bookItem.Book;
 
 public class CartItem {
 //	private String[] itemBook = new String[8]; // 도서 정보의 개수
