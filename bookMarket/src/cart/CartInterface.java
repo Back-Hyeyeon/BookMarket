@@ -1,5 +1,7 @@
 package cart;
 
+import java.util.ArrayList;
+
 import bookItem.Book;
 
 public interface CartInterface {
@@ -8,4 +10,5 @@ public interface CartInterface {
 	void insertBook(Book p); // CartItem 에 도서 정보를 등록
 	void removeCart(int numId); // 장바구니 순번 numId 의 항목을 삭제
 	void deleteBook(); // 장바구니의 모든 항목을 삭제
+	void printBookList(ArrayList<Book> bookList);
 }

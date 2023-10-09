@@ -2,7 +2,9 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -25,7 +27,8 @@ public class WelcomeBookMarket {
 		int userMobile; // 연락처
 		int numberSelection; // 번호 선택
 //		Book[] bookInfoList = new Book[NUM_BOOK];
-		Book[] bookInfoList;
+//		Book[] bookInfoList;
+		ArrayList<Book> bookInfoList;
 		int totalBookCount = 0;
 
 		System.out.println("Book Market 고객 정보 입력");
@@ -60,7 +63,7 @@ public class WelcomeBookMarket {
 						break;
 					case 4:
 						totalBookCount = totalFileToBookList(); // 도서 개수
-						bookInfoList = new Book[totalBookCount]; // 도서 개수에
+						bookInfoList = new ArrayList<Book>(); // 도서 개수에
 //					menuCartAddItem(bookInfoList);
 //					System.out.println("4. 장바구니에 항목 추가하기 : ");
 						break;
@@ -104,10 +107,54 @@ public class WelcomeBookMarket {
 		String adminId = input.next();
 		System.out.print("비밀번호 : ");
 		String adminPW = input.next();
+
 		Admin admin = new Admin(user.getName(), user.getPhone());
+
 		if (adminId.equals(admin.getId()) && adminPW.equals(admin.getPassword())) {
-			System.out.printf("이름 : %s , 연락처 : %d\n", admin.getName(), admin.getPhone());
-			System.out.printf("아이디 : %s , 비밀번호 : %s \n", admin.getId(), admin.getPassword());
+			String[] writeBook = new String[8];
+			System.out.println("도서 정보를 추가하겠습니까? Y | N ");
+			String str = input.next();
+
+			if (str.toUpperCase().equals("Y")) {
+				Date date = new Date();
+				SimpleDateFormat formatter = new SimpleDateFormat("yyMMddhhmmss");
+				String strDate = formatter.format(date);
+				writeBook[0] = "book" + strDate;
+				System.out.println("도서 ID : " + writeBook[0]);
+				String str1 = input.nextLine();
+				System.out.println("번호 부분만 입력 예) 123-12-12345-01-1");
+				System.out.print("ISBN : ");
+				writeBook[1] = input.nextLine();
+				writeBook[1] = "ISBN " + writeBook[1];
+				System.out.print("도서명 : ");
+				writeBook[2] = input.nextLine();
+				System.out.print("가격(숫자) : ");
+				writeBook[3] = input.nextLine();
+				System.out.print("저자 : ");
+				writeBook[4] = input.nextLine();
+				System.out.print("설명 : ");
+				writeBook[5] = input.nextLine();
+				System.out.print("분야 : ");
+				writeBook[6] = input.nextLine();
+				System.out.print("출판일(예:2023/01/01): ");
+				writeBook[7] = input.nextLine();
+				try {
+					// 새 도서 정보를 파일에 추가하기 위해 생성자에 true 옵션 설정
+					FileWriter fw = new FileWriter("book.txt", true);
+					for (int i = 0; i < 8; i++) {
+						fw.write(writeBook[i] + "\n");
+					}
+
+					fw.close();
+
+					System.out.println("새 도서 정보가 저장되었습니다.");
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			} else {
+				System.out.printf("이름 : %s , 연락처 : %d\n", admin.getName(), admin.getPhone());
+				System.out.printf("아이디 : %s , 비밀번호 : %s \n", admin.getId(), admin.getPassword());
+			}
 		} else {
 			System.out.println("관리자 정보가 일치하지 않습니다.");
 		}
@@ -160,7 +207,7 @@ public class WelcomeBookMarket {
 				boolean flag = false;
 				int numId = -1;
 				for (int i = 0; i < cart.cartCount; i++) {
-					if (str.equals(cart.cartItem[i].getBookID())) {
+					if (str.equals(cart.cartItem.get(i).getBookID())) {
 						numId = i;
 						flag = true;
 						break;
@@ -170,7 +217,7 @@ public class WelcomeBookMarket {
 					System.out.println("장바구니의 항목을 삭제하겠습니까? Y | N ");
 					str = input.nextLine();
 					if (str.toUpperCase().equals("Y") || str.toUpperCase().equals("y")) {
-						System.out.println(cart.cartItem[numId].getBookID() + "장바구니에서 도서가 삭제되었습니다.");
+						System.out.println(cart.cartItem.get(numId).getBookID() + "장바구니에서 도서가 삭제되었습니다.");
 						cart.removeCart(numId);
 					}
 
@@ -186,7 +233,7 @@ public class WelcomeBookMarket {
 		System.out.println("5. 장바구니의 항목 수량 줄이기");
 	}
 
-	private static void menuCartAddItem(Book[] book) {
+	private static void menuCartAddItem(ArrayList<Book> book) {
 //		System.out.println("4. 장바구니에 항목 추가하기 : ");
 		bookList(book);// 도서 정보메서드 출력
 		cart.printBookList(book);
@@ -198,8 +245,8 @@ public class WelcomeBookMarket {
 			String inputStr = input.nextLine();
 			boolean flag = false; // 일치 여부
 			int numId = -1; // 인덱스 번호
-			for (int i = 0; i < NUM_BOOK; i++) {
-				if (inputStr.equals(book[i].getBookId())) {
+			for (int i = 0; i < book.size(); i++) {
+				if (inputStr.equals(book.get(i).getBookId())) {
 					numId = i;
 					flag = true;
 					break;
@@ -209,9 +256,9 @@ public class WelcomeBookMarket {
 				System.out.println("장바구니에 추가하겠습니까? Y | N ");
 				inputStr = input.nextLine();
 				if (inputStr.toUpperCase().equals("Y") || inputStr.toUpperCase().equals("y")) {
-					System.out.println(book[numId].getBookId() + " 도서가 장바구니에추가되었습니다.");
-					if (!isCartInBook(book[numId].getBookId())) {
-						cart.insertBook(book[numId]);
+					System.out.println(book.get(numId).getBookId() + " 도서가 장바구니에추가되었습니다.");
+					if (!isCartInBook(book.get(numId).getBookId())) {
+						cart.insertBook(book.get(numId));
 //						cartItem[cartCount++] = new CartItem(book[numId]);
 					}
 					quit = true;
@@ -219,6 +266,11 @@ public class WelcomeBookMarket {
 					System.out.println("다시 입력해 주세요");
 			} // While
 		}
+	}
+
+	private static void bookList(ArrayList<Book> book) {
+		setFileToBookList(book);
+
 	}
 
 	private static void menuCartClear() throws CartException {
@@ -262,27 +314,9 @@ public class WelcomeBookMarket {
 		System.out.println("***************************************************");
 	}
 
-	private static void bookList(Book[] book) {
-		setFileToBookList(book);
-//		book[0] = new Book("book1", "ISBN 978-89-01-26726-5", "빅 히스토리", 33000);
-//		book[0].setAuthor("데이비드 크리스천");
-//		book[0].setDescription("우주와 지구, 인간을 하나로 잇는 새로운 역사");
-//		book[0].setCategory("인문 교양");
-//		book[0].setReleaseDate("2022/12/23");
-//		book[1] = new Book("book2", "ISBN 979-11-6921-062-1", "SICP", 45000);
-//		book[1].setAuthor("해럴드 에이블슨, 류광");
-//		book[1].setDescription("컴퓨터 프로그래밍의 구조와 해석");
-//		book[1].setCategory("개발 방법론");
-//		book[1].setReleaseDate("2022/12/30");
-//		book[2] = new Book("book3", "ISBN 978-89-6626-366-0", "러스트 프로그래밍", 35000);
-//		book[2].setAuthor("팀 맥나마라, 장연호");
-//		book[2].setDescription("러스트는 시스템 프로그래밍에 적합한 언어");
-//		book[2].setCategory("프로그래밍 언어");
-//		book[2].setReleaseDate("2022/07/08");
 
-	}
 
-	private static void setFileToBookList(Book[] booklist) {
+	private static void setFileToBookList(ArrayList<Book> bookList) {
 		try {
 			FileReader fr = new FileReader("book.txt");
 			BufferedReader reader = new BufferedReader(fr);
@@ -293,7 +327,6 @@ public class WelcomeBookMarket {
 				if (bookId.contains("book")) {
 					readBook[0] = bookId;
 					readBook[1] = reader.readLine();
-					;
 					readBook[2] = reader.readLine();
 					readBook[3] = reader.readLine();
 					readBook[4] = reader.readLine();
@@ -301,8 +334,11 @@ public class WelcomeBookMarket {
 					readBook[6] = reader.readLine();
 					readBook[7] = reader.readLine();
 				}
-				booklist[count++] = new Book(readBook[0], readBook[1], readBook[2], Integer.parseInt(readBook[3]),
-						readBook[4], readBook[5], readBook[6], readBook[7]);
+//				bookList[count++] = new Book(readBook[0], readBook[1], readBook[2], Integer.parseInt(readBook[3]),
+//						readBook[4], readBook[5], readBook[6], readBook[7]);
+				Book book = new Book(readBook[0], readBook[1], readBook[2], Integer.parseInt(readBook[3]), readBook[4],
+						readBook[5], readBook[6], readBook[7]);
+				bookList.add(book);
 			}
 			reader.close();
 			fr.close();
@@ -310,8 +346,6 @@ public class WelcomeBookMarket {
 			System.out.println(e);
 		}
 	}
-
-	
 
 	private static int totalFileToBookList() {
 		try {
@@ -334,14 +368,6 @@ public class WelcomeBookMarket {
 	}
 
 	private static boolean isCartInBook(String bookId) {
-//		boolean flag = false;
-//		for (int i = 0; i < cartCount; i++) {
-//			if (bookId == cartItem[i].getBookID()) {
-//				cartItem[i].setQuantity(cartItem[i].getQuantity() + 1);
-//				flag = true;
-//			}
-//		}
-//		return flag;
 		return cart.isCartInBook(bookId);
 	}
 
@@ -358,7 +384,7 @@ public class WelcomeBookMarket {
 		// 장바구니에 담긴 항목의 총 금액 계산
 		int sum = 0;
 		for (int i = 0; i < cart.cartCount; i++) {
-			sum += cart.cartItem[i].getTotalPrice();
+			sum += cart.cartItem.get(i).getTotalPrice();
 		}
 		System.out.println("\t\t\t 주문 총금액 : " + sum + "원\n");
 		System.out.println("----------------------------------------------");
