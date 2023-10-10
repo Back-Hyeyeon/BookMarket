@@ -64,7 +64,7 @@ public class WelcomeBookMarket {
 					case 4:
 						totalBookCount = totalFileToBookList(); // 도서 개수
 						bookInfoList = new ArrayList<Book>(); // 도서 개수에
-//					menuCartAddItem(bookInfoList);
+					    menuCartAddItem(bookInfoList);
 //					System.out.println("4. 장바구니에 항목 추가하기 : ");
 						break;
 					case 5:
